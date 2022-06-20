@@ -1,0 +1,41 @@
+version: '3'
+services:
+ # Nginx server configuration
+  web:
+    image: nginx:1.17
+    container_name: webserver
+    depends_on:
+      - docker-mysql
+      - php
+    links:
+      - docker-mysql
+      - php
+    volumes:
+      - ./webcontent:/var/www/html
+      - ./nginx:/etc/nginx/conf.d/
+    ports:
+      - "8080:80"
+    expose:
+      - 8080
+ # Php-fpm configuration
+  php:
+    image: php:7.2-fpm
+    volumes:
+      - ./webcontent:/var/www/html
+      - ./php:/usr/local/etc/php/php.ini
+ # Mysql configuration
+  docker-mysql:
+    image: mysql:5.7
+    container_name: docker-mysql-demo
+    restart: always
+    environment:
+        - MYSQL_DATABASE=tr
+        - MYSQL_ROOT_PASSWORD=kenan
+        - MYSQL_USER=kenan
+        - MYSQL_PASSWORD=kenan
+    ports:
+        - "3306:3306"
+    volumes:
+        - /dbdata:/var/lib/mysql
+    expose:
+      - 3306
